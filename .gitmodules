@@ -1,0 +1,3 @@
+[submodule "phpquery"]
+	path = phpquery
+	url = git://github.com/ShaneMcC/phpQuery.git
