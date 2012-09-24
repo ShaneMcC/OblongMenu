@@ -38,7 +38,7 @@ if (isset($people[$nick]['menu'])) {
 		if ($details['type'] == 'google') {
 			$menu = new MenuParser($m);
 			$menu = $menu->get();
-			$menu = $menu['lunch'];
+			$menu = isset($menu['dinner']) ? $menu['dinner'] : (isset($menu['lunch']) ? $menu['lunch'] : array('date' => 'none'));
 
 			if ($menu['date'] != date('Y/m/d', time())) {
 				$items[] = 'No menu available for the current day.';
