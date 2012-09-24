@@ -19,12 +19,12 @@ echo '</menu>', "\n"; */
 $nick = strtolower($obnick);
 
 $bits = explode(' ', $obline);
-if (count($bits) > 0) {
+if (count($bits) > 0 && !empty($bits[0])) {
 	$nick = strtolower($bits[0]);
 }
 
 if (empty($_REQUEST)) {
-	$nick = 'dataforce';
+	$nick = 'md87';
 }
 
 $colours = array('red' => '4', 'yellow' => '7', 'green' => '3');
@@ -38,6 +38,7 @@ if (isset($people[$nick]['menu'])) {
 		if ($details['type'] == 'google') {
 			$menu = new MenuParser($m);
 			$menu = $menu->get();
+			$menu = $menu['lunch'];
 
 			if ($menu['date'] != date('Y/m/d', time())) {
 				$items[] = 'No menu available for the current day.';
@@ -63,6 +64,8 @@ if (isset($people[$nick]['menu'])) {
 					$messages[] = $m;
 				}
 			}
+		} else if ($details['type'] == 'static') {
+			$messages[] = $m;
 		}
 	}
 }

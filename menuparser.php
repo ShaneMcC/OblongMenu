@@ -17,20 +17,26 @@ class MenuParser {
 
 	private function parse() {
 		$page = file_get_contents($this->url);
-		preg_match('#<!-- JSON Menu  <script type="text/javascript">  var menu = (.*);  </script>  -->#Ums', $page, $m);
-
-		$menu = trim($m[1]);
-		$menu = str_replace("'", '"', $menu);
-		$menu = json_decode($menu, true);
+		preg_match_all('#<!-- JSON Menu  <script type="text/javascript">  var menu = (.*);  </script>  -->#Ums', $page, $m);
 
 		$parsed = array();
-		foreach (array('date', 'meal', 'cafe', 'url') as $i) {
-			$parsed[$i] = $menu[$i];
-		}
-		$parsed['stations'] = array();
 
-		foreach ($menu['stations'] as $station) {
-			$parsed['stations'][$station['name']] = $station;
+		for ($i = 0; $i < count($m[0]); $i++) {
+			$menu = trim($m[1][$i]);
+			$menu = str_replace("'", '"', $menu);
+			$menu = json_decode($menu, true);
+
+			$thisMenu = array();
+			foreach (array('date', 'meal', 'cafe', 'url') as $bit) {
+				$thisMenu[$bit] = $menu[$bit];
+			}
+			$thisMenu['stations'] = array();
+
+			foreach ($menu['stations'] as $station) {
+				$thisMenu['stations'][$station['name']] = $station;
+			}
+
+			$parsed[$thisMenu['meal']] = $thisMenu;
 		}
 
 		$this->parsed = $parsed;
