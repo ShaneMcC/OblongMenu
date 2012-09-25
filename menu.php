@@ -21,10 +21,8 @@ if (count($bits) > 0 && !empty($bits[0])) {
 }
 
 if (empty($_REQUEST)) {
-	$nick = 'md87';
+	$nick = $defaultNick;
 }
-
-$colours = array('red' => '4', 'yellow' => '7', 'green' => '3');
 
 $messages = array();
 

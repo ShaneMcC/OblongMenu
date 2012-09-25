@@ -1,6 +1,10 @@
 <?php
 	$oblongKey = '';
 
+	$colours = array('red' => '4', 'yellow' => '7', 'green' => '3');
+
+	$defaultNick = 'md87';
+
 	$people = array('md87' => array('menu' => array('http://menu-lon-puddinglane.blogspot.co.uk/' => array('type' => 'google'),
 	                                                'http://menu-lon-pavilion.blogspot.co.uk/' => array('type' => 'google'),
 	                                               ),
