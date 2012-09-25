@@ -4,10 +4,7 @@ $obchan = isset($_REQUEST['chan']) ? $_REQUEST['chan'] : '';
 $obnick = isset($_REQUEST['nick']) ? $_REQUEST['nick'] : '';
 $obline = isset($_REQUEST['line']) ? $_REQUEST['line'] : '';
 
-$oblongKey = '';
-$people = array();
-
-require_once(dirname(__FILE__) . '/config.local.php');
+require_once(dirname(__FILE__) . '/config.php');
 require_once(dirname(__FILE__) . '/menuparser.php');
 require_once(dirname(__FILE__) . '/oblong.php');
 
