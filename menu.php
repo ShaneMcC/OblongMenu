@@ -34,30 +34,37 @@ $messages = array();
 if (isset($people[$nick]['menu'])) {
 	foreach ($people[$nick]['menu'] as $m => $details) {
 		$items = array();
+		$allitems = array();
 
 		if ($details['type'] == 'google') {
 			$menu = new MenuParser($m);
 			$menu = $menu->get();
 			$menu = isset($menu['dinner']) ? $menu['dinner'] : (isset($menu['lunch']) ? $menu['lunch'] : array('date' => 'none'));
 
+			$closed = strtotime('today ' . $menu['closing']);
+
 			if ($menu['date'] != date('Y/m/d', time())) {
 				$items[] = 'No menu available for the current day.';
+			} else if ($closed < time()) {
+				$items[] = 'Closed.';
 			} else {
 				foreach ($menu['stations'] as $name => $station) {
-					if (in_array($name, $people[$nick]['stations'])) {
+					foreach ($station['entries'] as $entry) {
+						$item = "\003" . $colours[$entry['color']] . $entry['name'] . "\003";
 
-						foreach ($station['entries'] as $entry) {
-							if (in_array($entry['color'], $people[$nick]['colours'])) {
-								$items[] = "\003" . $colours[$entry['color']] . $entry['name'] . "\003";
-							}
+						if (in_array($name, $people[$nick]['stations']) && in_array($entry['color'], $people[$nick]['colours'])) {
+							$items[] = $item;
 						}
+						$allitems[] = $item;
 					}
 				}
 			}
 
-			if (count($items) > 0) {
-				$messages[] = $menu['cafe'] . ": " . implode($items, ', ');
+			if (count($items) == 0) {
+				$items = $allitems;
 			}
+
+			$messages[] = $menu['cafe'] . ": " . implode($items, ', ');
 		} else if ($details['type'] == 'date') {
 			if (isset($details['days'])) {
 				if (in_array(date('D'), $details['days'])) {
