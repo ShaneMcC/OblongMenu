@@ -39,7 +39,7 @@ class MenuParser {
 			$parsed[$thisMenu['meal']] = $thisMenu;
 		}
 
-		if (preg_match_all('#">(Lunch|Breakfast|Dinner)</span></span></b><span ><span style="font-size: small; ">: ([0-9:]+(?:am|pm)) - ([0-9:]+(?:am|pm))</span#', $page, $m)) {
+		if (preg_match_all('#">(Lunch|Breakfast|Dinner)</span></span></b><span[ ]?><span style="font-size: small; ">: ([0-9:]+(?:am|pm)) - ([0-9:]+(?:am|pm))</span#', $page, $m)) {
 			for ($i = 0; $i < count($m[0]); $i++) {
 				$type = strtolower($m[1][$i]);
 				if (isset($parsed[$type])) {

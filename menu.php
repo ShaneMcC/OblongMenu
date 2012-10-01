@@ -37,6 +37,7 @@ if (isset($people[$nick]['menu'])) {
 			$menu = isset($menu['dinner']) ? $menu['dinner'] : (isset($menu['lunch']) ? $menu['lunch'] : array('date' => 'none'));
 
 			$closed = strtotime('today ' . $menu['closing']);
+			$open = strtotime('today ' . $menu['opening']);
 
 			if ($menu['date'] != date('Y/m/d', time())) {
 				$items[] = 'No menu available for the current day.';
@@ -59,7 +60,14 @@ if (isset($people[$nick]['menu'])) {
 				$items = $allitems;
 			}
 
-			$messages[] = $menu['cafe'] . ": " . implode($items, ', ');
+			$note = '';
+			if ($open > time()) {
+				$note = '(Opens at ' . $menu['opening'] . ' till ' . $menu['closing'] . ') ';
+			} else if ($open < time()) {
+				$note = '(Closes at ' . $menu['closing'] . ') ';
+			}
+
+			$messages[] = $menu['cafe'] . ": " . $note . implode($items, ', ');
 		} else if ($details['type'] == 'date') {
 			if (isset($details['days'])) {
 				if (in_array(date('D'), $details['days'])) {
