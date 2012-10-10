@@ -3,7 +3,7 @@
 
 	$colours = array('red' => '4', 'yellow' => '7', 'green' => '3');
 
-	$defaultNick = 'md87';
+	$defaultNick = 'test';
 
 	$people = array('md87' => array('menu' => array('http://menu-lon-puddinglane.blogspot.co.uk/' => array('type' => 'google'),
 	                                                'http://menu-lon-pavilion.blogspot.co.uk/' => array('type' => 'google'),
@@ -29,6 +29,18 @@
 	                'greboid' => array('menu' => array('Cheese Sandwich' => array('type' => 'date', 'days' => array('Mon', 'Tue', 'Wed', 'Thu', 'Fri')))),
 	                'rivernile' => array('menu' => array('Probably soup' => array('type' => 'date', 'days' => array('Mon', 'Tue', 'Wed', 'Thu', 'Fri')))),
 	                'demented-idiot' => array('menu' => array('Some kind of sandwich' => array('type' => 'date', 'days' => array('Mon', 'Tue', 'Wed', 'Thu', 'Fri')))),
+	                'test' => array('menu' => array(/* 'http://menu-lon-puddinglane.blogspot.co.uk/' => array('type' => 'google'), */
+	                                                'http://menu-lon-pavilion.blogspot.co.uk/' => array('type' => 'google'),
+	                                               ),
+	                                'stations' => array('Carvery Station',
+	                                                    'Indulgence Station',
+	                                                    'Palace Pier',
+	                                                    'The Great Kitchen',
+	                                                   ),
+	                                'colours' => array('red',
+	                                                   'yellow'
+	                                                   ),
+	                                ),
 	               );
 
 	if (file_exists(dirname(__FILE__) . '/config.local.php')) {

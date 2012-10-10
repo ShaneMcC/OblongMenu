@@ -20,28 +20,63 @@ class MenuParser {
 		preg_match_all('#<!-- JSON Menu  <script type="text/javascript">  var menu = (.*);  </script>  -->#Ums', $page, $m);
 
 		$parsed = array();
+		$parsed['cafe_name'] = preg_replace('#http://menu-([^.]*)\\..*#', '\1', $this->url);
+
+		$defaultBits = null;
 
 		for ($i = 0; $i < count($m[0]); $i++) {
-			$menu = trim($m[1][$i]);
-			$menu = str_replace("'", '"', $menu);
-			$menu = json_decode($menu, true);
+			$menustr = trim($m[1][$i]);
+			$menustr = str_replace("'", '"', $menustr);
+			$menu = json_decode($menustr, true);
+			if ($menu == null) {
+				$menustr = str_replace("\\", '\\\\', $menustr);
+				$menu = json_decode($menustr, true);
+			}
 
 			$thisMenu = array();
+
+			if ($menu == null) {
+				$thisMenu['error'] = 'JSON Error: ' . json_last_error();
+
+				// Try and work out what we can.
+				if (preg_match('#"meal": "([^"]*)"#', $menustr, $meal)) {
+					$thisMenu['meal'] = $meal[1];
+				}
+
+				if (preg_match('#"cafe": "([^"]*)"#', $menustr, $cafe)) {
+					$thisMenu['cafe'] = $cafe[1];
+				} else {
+					$thisMenu['cafe'] = $parsed['cafe_name'];
+				}
+			}
+
 			foreach (array('date', 'meal', 'cafe', 'url') as $bit) {
-				$thisMenu[$bit] = $menu[$bit];
+				if (isset($menu[$bit])) {
+					$thisMenu[$bit] = $menu[$bit];
+				}
 			}
+			if ($defaultBits == null) { $defaultBits = $thisMenu; }
+
 			$thisMenu['stations'] = array();
-
-			foreach ($menu['stations'] as $station) {
-				$thisMenu['stations'][$station['name']] = $station;
+			if (isset($menu['stations'])) {
+				foreach ($menu['stations'] as $station) {
+					$thisMenu['stations'][$station['name']] = $station;
+				}
 			}
 
-			$parsed[$thisMenu['meal']] = $thisMenu;
+			if (isset($thisMenu['meal'])) {
+				$parsed[$thisMenu['meal']] = $thisMenu;
+			}
 		}
 
 		if (preg_match_all('#">(Lunch|Breakfast|Dinner)</span></span></b><span[ ]?><span style="font-size: small; ">: ([0-9:]+(?:am|pm)) - ([0-9:]+(?:am|pm))</span#', $page, $m)) {
 			for ($i = 0; $i < count($m[0]); $i++) {
 				$type = strtolower($m[1][$i]);
+				if (!isset($parsed[$type])) {
+					$parsed[$type] = $defaultBits;
+					$parsed[$type]['meal'] = $type;
+				}
+
 				if (isset($parsed[$type])) {
 					$parsed[$type]['opening'] = $m[2][$i];
 					$parsed[$type]['closing'] = $m[3][$i];

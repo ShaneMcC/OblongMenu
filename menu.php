@@ -32,17 +32,33 @@ if (isset($people[$nick]['menu'])) {
 		$allitems = array();
 
 		if ($details['type'] == 'google') {
-			$menu = new MenuParser($m);
-			$menu = $menu->get();
-			$menu = isset($menu['dinner']) ? $menu['dinner'] : (isset($menu['lunch']) ? $menu['lunch'] : array('date' => 'none'));
+			$mainmenu = new MenuParser($m);
+			$mainmenu = $mainmenu->get();
+			$menu = array('error' => 'No menu found.', 'cafe' => $mainmenu['cafe_name']);
+			foreach (array('dinner', 'lunch', 'breakfast') as $choice) {
+				if (isset($mainmenu[$choice]['stations'])) {
+					$menu = $mainmenu[$choice];
+					break;
+				}
+			}
 
-			$closed = strtotime('today ' . $menu['closing']);
-			$open = strtotime('today ' . $menu['opening']);
+			if (isset($menu['closing']) && isset($menu['opening'])) {
+				$closed = strtotime('today ' . $menu['closing']);
+				$open = strtotime('today ' . $menu['opening']);
+			}
 
-			if ($menu['date'] != date('Y/m/d', time())) {
+			if (isset($mainmenu['error'])) {
+				$items[] = 'Unknown error parsing menu.';
+			} else if (isset($menu['error'])) {
+				$items[] = 'Error parsing menu: ' . $menu['error'];
+			} else if ($menu['date'] != date('Y/m/d', time())) {
 				$items[] = 'No menu available for the current day.';
 			} else if ($closed < time()) {
-				$items[] = 'Closed.';
+				$item = 'Closed.';
+				if ($menu['meal'] == 'lunch' && isset($mainmenu['dinner'])) {
+					$item .= ' Open for dinner from ' . $mainmenu['dinner']['opening'] . ' till ' . $mainmenu['dinner']['closing'];
+				}
+				$items[] = $item;
 			} else {
 				foreach ($menu['stations'] as $name => $station) {
 					foreach ($station['entries'] as $entry) {
@@ -61,10 +77,12 @@ if (isset($people[$nick]['menu'])) {
 			}
 
 			$note = '';
-			if ($open > time()) {
-				$note = '(Opens at ' . $menu['opening'] . ' till ' . $menu['closing'] . ') ';
-			} else if ($open < time()) {
-				$note = '(Closes at ' . $menu['closing'] . ') ';
+			if (isset($menu['closing']) && isset($menu['opening'])) {
+				if ($open > time()) {
+					$note = '(Opens at ' . $menu['opening'] . ' till ' . $menu['closing'] . ') ';
+				} else if ($open < time() && $closed > time()) {
+					$note = '(Closes at ' . $menu['closing'] . ') ';
+				}
 			}
 
 			$messages[] = $menu['cafe'] . ": " . $note . implode($items, ', ');
